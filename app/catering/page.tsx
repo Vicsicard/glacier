@@ -6,7 +6,7 @@ import Hero from "@/components/Hero";
 import TrustBar from "@/components/TrustBar";
 import Packages from "@/components/Packages";
 import EventTypes from "@/components/EventTypes";
-import Gallery from "@/components/Gallery";
+// import Gallery from "@/components/Gallery";
 import WhyGlacier from "@/components/WhyGlacier";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
@@ -24,7 +24,7 @@ export default function CateringPage() {
       <TrustBar />
       <Packages onOpenQuote={() => setQuoteModalOpen(true)} />
       <EventTypes />
-      <Gallery />
+      {/* <Gallery /> */}
       <WhyGlacier />
       <Testimonials />
       <FAQ />
