@@ -5,7 +5,7 @@ import { eventTypes } from "@/lib/mockData";
 
 export default function EventTypes() {
   return (
-    <section className="py-20 bg-white border-t border-gray-100">
+    <section className="py-20 bg-gradient-to-bl from-[#FFE5F4] to-[#E5F4FF]">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

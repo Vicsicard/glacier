@@ -5,7 +5,7 @@ import { trustIndicators } from "@/lib/mockData";
 
 export default function TrustBar() {
   return (
-    <section className="py-12 bg-white border-t border-gray-100">
+    <section className="py-12 bg-gradient-to-r from-[#FFF9E5] to-[#FFE5F4]">
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {trustIndicators.map((indicator, index) => (

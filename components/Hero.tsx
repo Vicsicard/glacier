@@ -15,8 +15,9 @@ export default function Hero({ onOpenQuote }: HeroProps) {
 
   return (
     <section className="relative min-h-[600px] md:min-h-[700px] flex items-center justify-center overflow-hidden">
-      {/* Background gradient placeholder */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#7B4B94]/20 via-white to-[#FFD700]/20" />
+      {/* Vibrant animated background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#FFE5F4] via-[#FFF9E5] to-[#E5F4FF] animate-gradient" />
+      <div className="absolute inset-0 bg-gradient-to-tr from-[#7B4B94]/10 via-transparent to-[#FFD700]/10" />
       
       {/* Content */}
       <motion.div
