@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +27,7 @@ interface QuoteModalProps {
 }
 
 export default function QuoteModal({ open, onOpenChange }: QuoteModalProps) {
+  const [currentStep, setCurrentStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
@@ -41,31 +42,46 @@ export default function QuoteModal({ open, onOpenChange }: QuoteModalProps) {
     email: "",
     phone: "",
     specialRequests: "",
-    hearAbout: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const totalSteps = 4;
+
+  const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {};
     
-    if (!formData.eventType) newErrors.eventType = "Event type is required";
-    if (!formData.guestCount) newErrors.guestCount = "Guest count is required";
-    if (!formData.eventDate) newErrors.eventDate = "Event date is required";
-    if (!formData.name) newErrors.name = "Name is required";
-    if (!formData.email) newErrors.email = "Email is required";
-    
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
+    if (step === 1) {
+      if (!formData.eventType) newErrors.eventType = "Please select an event type";
+      if (!formData.guestCount) newErrors.guestCount = "Please enter guest count";
+      if (!formData.eventDate) newErrors.eventDate = "Please select a date";
+    } else if (step === 3) {
+      if (!formData.name) newErrors.name = "Please enter your name";
+      if (!formData.email) newErrors.email = "Please enter your email";
     }
     
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handleBack = () => {
+    setCurrentStep(currentStep - 1);
     setErrors({});
-    setSubmitted(true);
+  };
+
+  const handleSubmit = () => {
+    if (validateStep(currentStep)) {
+      setSubmitted(true);
+    }
   };
 
   const handleClose = () => {
     setSubmitted(false);
+    setCurrentStep(1);
     setFormData({
       eventType: "",
       guestCount: "",
@@ -78,7 +94,6 @@ export default function QuoteModal({ open, onOpenChange }: QuoteModalProps) {
       email: "",
       phone: "",
       specialRequests: "",
-      hearAbout: ""
     });
     setErrors({});
     onOpenChange(false);
@@ -86,216 +101,266 @@ export default function QuoteModal({ open, onOpenChange }: QuoteModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl">
         {!submitted ? (
           <>
             <DialogHeader>
               <DialogTitle className="text-2xl font-semibold">
                 Request a Quote
               </DialogTitle>
+              <p className="text-sm text-gray-600 mt-2">Step {currentStep} of {totalSteps}</p>
             </DialogHeader>
 
-            <form onSubmit={handleSubmit} className="space-y-6 mt-4">
-              {/* Event Details */}
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg border-b pb-2">Event Details</h3>
-                
-                <div>
-                  <Label htmlFor="eventType">Event Type *</Label>
-                  <Select
-                    value={formData.eventType}
-                    onValueChange={(value) => setFormData({ ...formData, eventType: value })}
+            {/* Progress Bar */}
+            <div className="w-full bg-gray-200 rounded-full h-2 mt-4">
+              <div 
+                className="bg-[#7B4B94] h-2 rounded-full transition-all duration-300"
+                style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+              />
+            </div>
+
+            <div className="mt-6">
+              <AnimatePresence mode="wait">
+                {/* Step 1: Event Basics */}
+                {currentStep === 1 && (
+                  <motion.div
+                    key="step1"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-6"
                   >
-                    <SelectTrigger id="eventType" className={errors.eventType ? "border-red-500" : ""}>
-                      <SelectValue placeholder="Select event type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="wedding">Wedding</SelectItem>
-                      <SelectItem value="corporate">Corporate Event</SelectItem>
-                      <SelectItem value="school">School Event</SelectItem>
-                      <SelectItem value="private">Private Party</SelectItem>
-                      <SelectItem value="festival">Festival</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.eventType && <p className="text-sm text-red-500 mt-1">{errors.eventType}</p>}
-                </div>
-
-                <div>
-                  <Label htmlFor="guestCount">Guest Count *</Label>
-                  <Input
-                    id="guestCount"
-                    type="number"
-                    placeholder="Number of guests"
-                    value={formData.guestCount}
-                    onChange={(e) => setFormData({ ...formData, guestCount: e.target.value })}
-                    className={errors.guestCount ? "border-red-500" : ""}
-                  />
-                  {errors.guestCount && <p className="text-sm text-red-500 mt-1">{errors.guestCount}</p>}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="eventDate">Event Date *</Label>
-                    <Input
-                      id="eventDate"
-                      type="date"
-                      value={formData.eventDate}
-                      onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
-                      className={errors.eventDate ? "border-red-500" : ""}
-                    />
-                    {errors.eventDate && <p className="text-sm text-red-500 mt-1">{errors.eventDate}</p>}
-                  </div>
-                  <div>
-                    <Label htmlFor="eventTime">Event Time</Label>
-                    <Input
-                      id="eventTime"
-                      type="time"
-                      value={formData.eventTime}
-                      onChange={(e) => setFormData({ ...formData, eventTime: e.target.value })}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Location */}
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg border-b pb-2">Location</h3>
-                
-                <div>
-                  <Label htmlFor="venue">Venue / Address</Label>
-                  <Input
-                    id="venue"
-                    placeholder="Event location"
-                    value={formData.venue}
-                    onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
-                  />
-                </div>
-
-                <div>
-                  <Label>Indoor or Outdoor</Label>
-                  <RadioGroup
-                    value={formData.location}
-                    onValueChange={(value) => setFormData({ ...formData, location: value })}
-                    className="flex gap-4 mt-2"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="indoor" id="indoor" />
-                      <Label htmlFor="indoor" className="font-normal cursor-pointer">Indoor</Label>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Tell us about your event</h3>
+                    
+                    <div>
+                      <Label htmlFor="eventType" className="text-base">What type of event? *</Label>
+                      <Select
+                        value={formData.eventType}
+                        onValueChange={(value) => setFormData({ ...formData, eventType: value })}
+                      >
+                        <SelectTrigger id="eventType" className={`mt-2 h-12 ${errors.eventType ? "border-red-500" : ""}`}>
+                          <SelectValue placeholder="Select event type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="wedding">Wedding</SelectItem>
+                          <SelectItem value="corporate">Corporate Event</SelectItem>
+                          <SelectItem value="school">School Event</SelectItem>
+                          <SelectItem value="private">Private Party</SelectItem>
+                          <SelectItem value="festival">Festival</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {errors.eventType && <p className="text-sm text-red-500 mt-1">{errors.eventType}</p>}
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="outdoor" id="outdoor" />
-                      <Label htmlFor="outdoor" className="font-normal cursor-pointer">Outdoor</Label>
+
+                    <div>
+                      <Label htmlFor="guestCount" className="text-base">How many guests? *</Label>
+                      <Input
+                        id="guestCount"
+                        type="number"
+                        placeholder="Number of guests"
+                        value={formData.guestCount}
+                        onChange={(e) => setFormData({ ...formData, guestCount: e.target.value })}
+                        className={`mt-2 h-12 ${errors.guestCount ? "border-red-500" : ""}`}
+                      />
+                      {errors.guestCount && <p className="text-sm text-red-500 mt-1">{errors.guestCount}</p>}
                     </div>
-                  </RadioGroup>
-                </div>
-              </div>
 
-              {/* Service */}
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg border-b pb-2">Service</h3>
-                
-                <div>
-                  <Label htmlFor="serviceType">Service Type</Label>
-                  <Select
-                    value={formData.serviceType}
-                    onValueChange={(value) => setFormData({ ...formData, serviceType: value })}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="eventDate" className="text-base">Event Date *</Label>
+                        <Input
+                          id="eventDate"
+                          type="date"
+                          value={formData.eventDate}
+                          onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
+                          className={`mt-2 h-12 ${errors.eventDate ? "border-red-500" : ""}`}
+                        />
+                        {errors.eventDate && <p className="text-sm text-red-500 mt-1">{errors.eventDate}</p>}
+                      </div>
+                      <div>
+                        <Label htmlFor="eventTime" className="text-base">Event Time</Label>
+                        <Input
+                          id="eventTime"
+                          type="time"
+                          value={formData.eventTime}
+                          onChange={(e) => setFormData({ ...formData, eventTime: e.target.value })}
+                          className="mt-2 h-12"
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 2: Location & Service */}
+                {currentStep === 2 && (
+                  <motion.div
+                    key="step2"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-6"
                   >
-                    <SelectTrigger id="serviceType">
-                      <SelectValue placeholder="Select service type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="scoops">Scoops</SelectItem>
-                      <SelectItem value="sundae">Sundae Bar</SelectItem>
-                      <SelectItem value="notsure">Not Sure</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Location & Service Details</h3>
+                    
+                    <div>
+                      <Label htmlFor="venue" className="text-base">Venue or Address</Label>
+                      <Input
+                        id="venue"
+                        placeholder="Where is your event?"
+                        value={formData.venue}
+                        onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
+                        className="mt-2 h-12"
+                      />
+                    </div>
 
-              {/* Contact */}
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg border-b pb-2">Contact</h3>
-                
-                <div>
-                  <Label htmlFor="name">Name *</Label>
-                  <Input
-                    id="name"
-                    placeholder="Your name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className={errors.name ? "border-red-500" : ""}
-                  />
-                  {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
-                </div>
+                    <div>
+                      <Label className="text-base">Indoor or Outdoor?</Label>
+                      <RadioGroup
+                        value={formData.location}
+                        onValueChange={(value) => setFormData({ ...formData, location: value })}
+                        className="flex gap-6 mt-3"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="indoor" id="indoor" />
+                          <Label htmlFor="indoor" className="font-normal cursor-pointer text-base">Indoor</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="outdoor" id="outdoor" />
+                          <Label htmlFor="outdoor" className="font-normal cursor-pointer text-base">Outdoor</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
 
-                <div>
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className={errors.email ? "border-red-500" : ""}
-                  />
-                  {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
-                </div>
+                    <div>
+                      <Label htmlFor="serviceType" className="text-base">What service are you interested in?</Label>
+                      <Select
+                        value={formData.serviceType}
+                        onValueChange={(value) => setFormData({ ...formData, serviceType: value })}
+                      >
+                        <SelectTrigger id="serviceType" className="mt-2 h-12">
+                          <SelectValue placeholder="Select service type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="scoops">Classic Scoop Service</SelectItem>
+                          <SelectItem value="sundae">Sundae Bar Experience</SelectItem>
+                          <SelectItem value="custom">Custom Event Experience</SelectItem>
+                          <SelectItem value="notsure">Not Sure Yet</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </motion.div>
+                )}
 
-                <div>
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="(555) 123-4567"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              {/* Additional */}
-              <div className="space-y-4">
-                <h3 className="font-semibold text-lg border-b pb-2">Additional</h3>
-                
-                <div>
-                  <Label htmlFor="specialRequests">Special Requests</Label>
-                  <Textarea
-                    id="specialRequests"
-                    placeholder="Any special requirements or questions?"
-                    value={formData.specialRequests}
-                    onChange={(e) => setFormData({ ...formData, specialRequests: e.target.value })}
-                    rows={3}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="hearAbout">How did you hear about us?</Label>
-                  <Select
-                    value={formData.hearAbout}
-                    onValueChange={(value) => setFormData({ ...formData, hearAbout: value })}
+                {/* Step 3: Contact Info */}
+                {currentStep === 3 && (
+                  <motion.div
+                    key="step3"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-6"
                   >
-                    <SelectTrigger id="hearAbout">
-                      <SelectValue placeholder="Select one" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="google">Google Search</SelectItem>
-                      <SelectItem value="social">Social Media</SelectItem>
-                      <SelectItem value="referral">Friend/Family Referral</SelectItem>
-                      <SelectItem value="event">Saw at an Event</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">How can we reach you?</h3>
+                    
+                    <div>
+                      <Label htmlFor="name" className="text-base">Your Name *</Label>
+                      <Input
+                        id="name"
+                        placeholder="Full name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className={`mt-2 h-12 ${errors.name ? "border-red-500" : ""}`}
+                      />
+                      {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
+                    </div>
 
-              <Button
-                type="submit"
-                className="w-full bg-[#7B4B94] hover:bg-[#7B4B94]/90 text-white rounded-xl font-medium py-6"
-              >
-                Request Quote
-              </Button>
-            </form>
+                    <div>
+                      <Label htmlFor="email" className="text-base">Email Address *</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="your@email.com"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className={`mt-2 h-12 ${errors.email ? "border-red-500" : ""}`}
+                      />
+                      {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
+                    </div>
+
+                    <div>
+                      <Label htmlFor="phone" className="text-base">Phone Number</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="(555) 123-4567"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="mt-2 h-12"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 4: Additional Details */}
+                {currentStep === 4 && (
+                  <motion.div
+                    key="step4"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-6"
+                  >
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Anything else we should know?</h3>
+                    
+                    <div>
+                      <Label htmlFor="specialRequests" className="text-base">Special Requests or Questions</Label>
+                      <Textarea
+                        id="specialRequests"
+                        placeholder="Tell us about any dietary restrictions, flavor preferences, setup requirements, or questions you have..."
+                        value={formData.specialRequests}
+                        onChange={(e) => setFormData({ ...formData, specialRequests: e.target.value })}
+                        rows={6}
+                        className="mt-2"
+                      />
+                      <p className="text-sm text-gray-500 mt-2">Optional - but helpful for us to provide an accurate quote!</p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Navigation Buttons */}
+              <div className="flex gap-3 mt-8 pt-6 border-t">
+                {currentStep > 1 && (
+                  <Button
+                    type="button"
+                    onClick={handleBack}
+                    variant="outline"
+                    className="flex-1 h-12"
+                  >
+                    Back
+                  </Button>
+                )}
+                
+                {currentStep < totalSteps ? (
+                  <Button
+                    type="button"
+                    onClick={handleNext}
+                    className="flex-1 bg-[#7B4B94] hover:bg-[#7B4B94]/90 text-white h-12"
+                  >
+                    Continue
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    onClick={handleSubmit}
+                    className="flex-1 bg-[#7B4B94] hover:bg-[#7B4B94]/90 text-white h-12"
+                  >
+                    Submit Request
+                  </Button>
+                )}
+              </div>
+            </div>
           </>
         ) : (
           <motion.div
