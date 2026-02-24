@@ -50,27 +50,32 @@ export const eventTypes = [
   {
     id: 1,
     title: "Weddings",
-    description: "Make your special day even sweeter with our elegant ice cream service"
+    description: "Make your special day even sweeter with our elegant ice cream service",
+    image: "/images/events/wedding.jpg"
   },
   {
     id: 2,
     title: "Corporate Events",
-    description: "Impress clients and employees with premium ice cream catering"
+    description: "Impress clients and employees with premium ice cream catering",
+    image: "/images/events/corporate.jpg"
   },
   {
     id: 3,
     title: "School Events",
-    description: "Fun and delicious treats for students, staff, and families"
+    description: "Fun and delicious treats for students, staff, and families",
+    image: "/images/events/school.jpg"
   },
   {
     id: 4,
     title: "Private Parties",
-    description: "Birthdays, anniversaries, and celebrations of all kinds"
+    description: "Birthdays, anniversaries, and celebrations of all kinds",
+    image: "/images/events/private.jpg"
   },
   {
     id: 5,
     title: "Festivals",
-    description: "Serving crowds from 100 to 5,000+ guests with ease"
+    description: "Serving crowds from 100 to 5,000+ guests with ease",
+    image: "/images/events/festival.jpg"
   }
 ];
 

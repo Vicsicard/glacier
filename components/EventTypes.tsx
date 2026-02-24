@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { eventTypes } from "@/lib/mockData";
 
 export default function EventTypes() {
@@ -31,11 +32,15 @@ export default function EventTypes() {
               transition={{ delay: index * 0.1 }}
               className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"
             >
-              {/* Image placeholder */}
-              <div className="h-48 bg-gradient-to-br from-[#7B4B94]/30 to-[#FFD700]/30 flex items-center justify-center">
-                <span className="text-gray-500 font-medium">
-                  {event.title} Photo
-                </span>
+              {/* Event Image */}
+              <div className="relative h-48 w-full overflow-hidden">
+                <Image
+                  src={event.image}
+                  alt={event.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
               </div>
 
               <div className="p-6">
