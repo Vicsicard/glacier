@@ -11,7 +11,7 @@ import { faqs } from "@/lib/mockData";
 
 export default function FAQ() {
   return (
-    <section className="py-20 bg-white border-t border-gray-100">
+    <section className="py-20 bg-gradient-to-br from-[#FFE8B3] to-[#D4B8E8]">
       <div className="max-w-4xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -5,7 +5,7 @@ import { testimonials } from "@/lib/mockData";
 
 export default function Testimonials() {
   return (
-    <section className="py-20 bg-[#F7F7F7] border-t border-gray-100">
+    <section className="py-20 bg-gradient-to-l from-[#D4B8E8] via-[#E8D4F0] to-[#C9E4FF]">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -5,7 +5,7 @@ import { whyGlacierPoints } from "@/lib/mockData";
 
 export default function WhyGlacier() {
   return (
-    <section className="py-20 bg-gradient-to-r from-[#E5F4FF] to-[#FFF9E5]">
+    <section className="py-20 bg-gradient-to-r from-[#C9E4FF] via-[#E8D4F0] to-[#FFE8B3]">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

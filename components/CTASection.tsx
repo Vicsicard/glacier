@@ -9,7 +9,7 @@ interface CTASectionProps {
 
 export default function CTASection({ onOpenQuote }: CTASectionProps) {
   return (
-    <section className="py-20 bg-gradient-to-br from-[#E5F4FF] via-[#FFE5F4] to-[#FFF9E5]">
+    <section className="py-20 bg-gradient-to-br from-[#D4B8E8] via-[#E8D4F0] to-[#FFE8B3]">
       <div className="max-w-4xl mx-auto px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -10,7 +10,7 @@ interface PackagesProps {
 
 export default function Packages({ onOpenQuote }: PackagesProps) {
   return (
-    <section id="packages" className="py-20 bg-[#F7F7F7] border-t border-gray-100">
+    <section id="packages" className="py-20 bg-gradient-to-r from-[#FFE8B3] via-[#E8D4F0] to-[#D4B8E8]">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
