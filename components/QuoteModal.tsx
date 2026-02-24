@@ -101,7 +101,7 @@ export default function QuoteModal({ open, onOpenChange }: QuoteModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto sm:max-h-[85vh]">
         {!submitted ? (
           <>
             <DialogHeader>
@@ -119,7 +119,7 @@ export default function QuoteModal({ open, onOpenChange }: QuoteModalProps) {
               />
             </div>
 
-            <div className="mt-6">
+            <div className="mt-6 pb-4">
               <AnimatePresence mode="wait">
                 {/* Step 1: Event Basics */}
                 {currentStep === 1 && (
@@ -166,15 +166,16 @@ export default function QuoteModal({ open, onOpenChange }: QuoteModalProps) {
                       {errors.guestCount && <p className="text-sm text-red-500 mt-1">{errors.guestCount}</p>}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="eventDate" className="text-base">Event Date *</Label>
                         <Input
                           id="eventDate"
                           type="date"
+                          min={new Date().toISOString().split('T')[0]}
                           value={formData.eventDate}
                           onChange={(e) => setFormData({ ...formData, eventDate: e.target.value })}
-                          className={`mt-2 h-12 ${errors.eventDate ? "border-red-500" : ""}`}
+                          className={`mt-2 h-12 text-base ${errors.eventDate ? "border-red-500" : ""}`}
                         />
                         {errors.eventDate && <p className="text-sm text-red-500 mt-1">{errors.eventDate}</p>}
                       </div>
